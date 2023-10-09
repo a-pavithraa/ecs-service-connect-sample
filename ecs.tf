@@ -80,15 +80,7 @@ module "ecs" {
           port_name      = var.db_host
           discovery_name = var.db_host
         }
-        log_configuration = {
-          log_driver = "awslogs"
-          options = {
-            awslogs-group         = "/aws/ecs/aws-ec2"
-            awslogs-region        = "us-east-1"
-            awslogs-stream-prefix = "ecs"
-          }
-
-        }
+       
       }
 
       subnet_ids = module.vpc.private_subnets
@@ -99,7 +91,8 @@ module "ecs" {
           to_port     = var.db_port
           protocol    = "tcp"
           description = "Service port"
-          cidr_blocks = module.vpc.private_subnets_cidr_blocks
+          cidr_blocks = ["0.0.0.0/0"]
+          #cidr_blocks = module.vpc.private_subnets_cidr_blocks
           # source_security_group_id = "sg-12345678"
         }
         egress_all = {
@@ -173,7 +166,8 @@ module "ecs" {
           to_port     = var.mailhog_port_smtp
           protocol    = "tcp"
           description = "Service port"
-          cidr_blocks = module.vpc.private_subnets_cidr_blocks
+          cidr_blocks = ["0.0.0.0/0"]
+          # cidr_blocks = module.vpc.private_subnets_cidr_blocks
           # source_security_group_id = "sg-12345678"
         }
         email-security-group-external = {
@@ -256,15 +250,7 @@ module "ecs" {
 
       service_connect_configuration = {
         namespace = aws_service_discovery_http_namespace.techbuzz.http_name
-        log_configuration = {
-          log_driver = "awslogs"
-          options = {
-            awslogs-group         = "/aws/ecs/aws-ec2"
-            awslogs-region        = "us-east-1"
-            awslogs-stream-prefix = "ecs"
-          }
-
-        }
+        
 
       }
 
@@ -276,8 +262,8 @@ module "ecs" {
           to_port     = var.app_port
           protocol    = "tcp"
           description = "Service port"
-          # cidr_blocks = ["0.0.0.0/0"]
-          source_security_group_id = module.loadbalancer_sg.security_group_id
+         cidr_blocks = ["0.0.0.0/0"]
+          #source_security_group_id = module.loadbalancer_sg.security_group_id
         }
         egress_all = {
           type        = "egress"
