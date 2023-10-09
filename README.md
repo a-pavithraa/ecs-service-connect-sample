@@ -33,3 +33,13 @@ terrafor apply
 
 Main app can be accessed at https://techbuzzbackend.yourdomain and mailhog can be accessed at https://techbuzzmamail.yourdomain . The latter has to be used for access mail for verfication, forgot password features.
 
+Check whether service connect is enabled
+
+![image-20231009171523618](/Users/pavithra/Library/Application Support/typora-user-images/image-20231009171523618.png)
+
+
+
+#### Additional Notes
+
+Order of service deployment should be maintained. For example, main app depends on postgres and mailhog . So postgres and mailhog services have to be deployed prior for service discovery to work.
+
