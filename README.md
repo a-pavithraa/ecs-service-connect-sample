@@ -28,7 +28,7 @@ Run the following commands in succession
 ```
 terraform init
 
-terrafor apply
+terraform apply
 ```
 
 Main app can be accessed at https://techbuzzbackend.yourdomain and mailhog can be accessed at https://techbuzzmamail.yourdomain . The latter has to be used for access mail for verfication, forgot password features.
