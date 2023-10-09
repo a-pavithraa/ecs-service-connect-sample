@@ -74,7 +74,7 @@ module "ecs" {
         namespace = aws_service_discovery_http_namespace.example.http_name
         service = {
           client_alias = {
-            port     = 5432
+            port     = var.db_port
             dns_name = var.db_host
           }
           port_name      = var.db_host
@@ -141,7 +141,7 @@ module "ecs" {
         namespace = aws_service_discovery_http_namespace.example.http_name
         service = {
           client_alias = {
-            port     = 1025
+            port     = var.mailhog_port_smtp
             dns_name = var.mail_host
           }
           port_name      = var.mail_host

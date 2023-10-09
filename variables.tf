@@ -64,7 +64,7 @@ variable "mailhog_image" {
 }
 variable "db_host" {
   type    = string
-  default = "techbuzz-db"
+  default = "techbuzz-storage"
 }
 variable "mail_host" {
   type    = string
