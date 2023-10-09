@@ -52,7 +52,7 @@ variable "mailhog_port_http" {
 
 variable "app_image" {
   type    = string
-  default = "pavithravasudevan/techbuzz"
+  default = "sivaprasadreddy/techbuzz"
 }
 variable "postgres_image" {
   type    = string
@@ -60,7 +60,7 @@ variable "postgres_image" {
 }
 variable "mailhog_image" {
   type    = string
-  default = "mailhog/mailhog:v1.0.1"
+  default = "mailhog/mailhog"
 }
 variable "db_host" {
   type    = string

@@ -1,10 +1,10 @@
-resource "aws_service_discovery_http_namespace" "example" {
+resource "aws_service_discovery_http_namespace" "techbuzz" {
   name        = var.prefix
   description = "Namespace for ${var.prefix} ECS services"
 }
 module "ecs" {
   source     = "terraform-aws-modules/ecs/aws"
-  depends_on = [aws_service_discovery_http_namespace.example]
+  depends_on = [aws_service_discovery_http_namespace.techbuzz]
 
   cluster_name = "${var.prefix}_cluster"
 
@@ -71,7 +71,7 @@ module "ecs" {
       }
 
       service_connect_configuration = {
-        namespace = aws_service_discovery_http_namespace.example.http_name
+        namespace = aws_service_discovery_http_namespace.techbuzz.http_name
         service = {
           client_alias = {
             port     = var.db_port
@@ -79,6 +79,15 @@ module "ecs" {
           }
           port_name      = var.db_host
           discovery_name = var.db_host
+        }
+        log_configuration = {
+          log_driver = "awslogs"
+          options = {
+            awslogs-group         = "/aws/ecs/aws-ec2"
+            awslogs-region        = "us-east-1"
+            awslogs-stream-prefix = "ecs"
+          }
+
         }
       }
 
@@ -90,7 +99,7 @@ module "ecs" {
           to_port     = var.db_port
           protocol    = "tcp"
           description = "Service port"
-          cidr_blocks = ["0.0.0.0/0"]
+          cidr_blocks = module.vpc.private_subnets_cidr_blocks
           # source_security_group_id = "sg-12345678"
         }
         egress_all = {
@@ -113,7 +122,7 @@ module "ecs" {
           cpu       = 512
           memory    = 1024
           essential = true
-          image     = "mailhog/mailhog"
+          image     = var.mailhog_image
 
 
           port_mappings = [
@@ -138,7 +147,7 @@ module "ecs" {
       }
 
       service_connect_configuration = {
-        namespace = aws_service_discovery_http_namespace.example.http_name
+        namespace = aws_service_discovery_http_namespace.techbuzz.http_name
         service = {
           client_alias = {
             port     = var.mailhog_port_smtp
@@ -164,7 +173,7 @@ module "ecs" {
           to_port     = var.mailhog_port_smtp
           protocol    = "tcp"
           description = "Service port"
-          cidr_blocks = ["0.0.0.0/0"]
+          cidr_blocks = module.vpc.private_subnets_cidr_blocks
           # source_security_group_id = "sg-12345678"
         }
         email-security-group-external = {
@@ -198,7 +207,7 @@ module "ecs" {
           cpu       = 512
           memory    = 1024
           essential = true
-          image     = "pavithravasudevan/techbuzz"
+          image     = var.app_image
           environment = [
             {
               "name" : "spring.datasource.url",
@@ -246,7 +255,16 @@ module "ecs" {
       }
 
       service_connect_configuration = {
-        namespace = aws_service_discovery_http_namespace.example.http_name
+        namespace = aws_service_discovery_http_namespace.techbuzz.http_name
+        log_configuration = {
+          log_driver = "awslogs"
+          options = {
+            awslogs-group         = "/aws/ecs/aws-ec2"
+            awslogs-region        = "us-east-1"
+            awslogs-stream-prefix = "ecs"
+          }
+
+        }
 
       }
 
@@ -258,8 +276,8 @@ module "ecs" {
           to_port     = var.app_port
           protocol    = "tcp"
           description = "Service port"
-          cidr_blocks = ["0.0.0.0/0"]
-          # source_security_group_id = "sg-12345678"
+          # cidr_blocks = ["0.0.0.0/0"]
+          source_security_group_id = module.loadbalancer_sg.security_group_id
         }
         egress_all = {
           type        = "egress"
@@ -273,4 +291,8 @@ module "ecs" {
   }
 
   tags = local.common_tags
+}
+output "security_group_rules" {
+  value = module.ecs.services["techbuzz-storage"].security_group_id
+
 }
